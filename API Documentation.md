@@ -1,0 +1,769 @@
+# BlockCAD — API Documentation (MVP)
+
+**API Style:** REST  
+**Base Path:** `/api`  
+**Data Format:** JSON, except file exports  
+**Document Status:** Initial draft 
+
+## 1. Overview
+
+BlockCAD is a 3D modeling application that allows users to create 3D shapes, modify their geometry and appearance, save and load projects, search projects, and export models to STL format.
+
+This document defines the proposed API structure for the Minimum Viable Product (MVP). Endpoint behavior, request and response formats, and status codes must be verified against the implemented backend.
+
+### General conventions
+
+- Endpoints use the `/api` base path.
+- JSON is used for request and response bodies unless otherwise specified.
+- Protected endpoints require authentication.
+- The examples use illustrative IDs and timestamps.
+- The final documentation must reflect the actual response fields and status codes returned by the backend.
+
+## 2. Authentication
+
+Authentication allows users to register, log in, log out, and retrieve their current account information.
+
+**Authentication mechanism:** The final implementation must specify whether authentication uses secure cookies or bearer tokens and document how the frontend sends credentials.
+
+| Method | Endpoint | Purpose | Authentication |
+|---|---|---|---|
+| POST | `/api/auth/register` | Register a new user | No |
+| POST | `/api/auth/login` | Log in a user | No |
+| POST | `/api/auth/logout` | Log out the current user | Yes |
+| GET | `/api/auth/user` | Get current user information | Yes |
+
+These routes are proposed and must be checked against the actual implementation.
+
+### 2.1 Register a User
+
+**Endpoint:** `POST /api/auth/register`
+
+**Purpose:** Create a new user account.
+
+**Authentication:** Not required.
+
+**Request body:**
+
+```json
+{
+  "name": "Alex",
+  "email": "alex@example.com",
+  "password": "ExamplePassword123!"
+}
+```
+
+**Example successful response — `201 Created`:**
+
+```json
+{
+  "id": "user_123",
+  "name": "Alex",
+  "email": "alex@example.com"
+}
+```
+
+**Possible errors:**
+
+- `400 Bad Request` — required fields are missing or invalid.
+- `409 Conflict` — the email address is already registered.
+- `500 Internal Server Error` — unexpected server error.
+
+The actual registration fields, validation rules, and response must be confirmed against the implementation.
+
+### 2.2 Log In
+
+**Endpoint:** `POST /api/auth/login`
+
+**Purpose:** Authenticate a user and establish a session.
+
+**Authentication:** Not required before login.
+
+**Request body:**
+
+```json
+{
+  "email": "alex@example.com",
+  "password": "ExamplePassword123!"
+}
+```
+
+**Example successful response — `200 OK`:**
+
+```json
+{
+  "user": {
+    "id": "user_123",
+    "name": "Alex",
+    "email": "alex@example.com"
+  }
+}
+```
+
+The example assumes authentication is established through a cookie or another session mechanism. If bearer tokens are used, the actual response must document the token fields.
+
+**Possible errors:**
+
+- `400 Bad Request` — invalid request fields.
+- `401 Unauthorized` — credentials are incorrect.
+- `500 Internal Server Error` — unexpected server error.
+
+### 2.3 Log Out
+
+**Endpoint:** `POST /api/auth/logout`
+
+**Purpose:** End the current user's session.
+
+**Authentication:** Required.
+
+**Request:** No body required in this proposed design.
+
+**Example successful response — `204 No Content`:**
+
+No response body.
+
+**Possible errors:**
+
+- `401 Unauthorized` — authentication is missing or invalid.
+- `500 Internal Server Error` — unexpected server error.
+
+The response status and session-clearing behavior must match the implemented authentication mechanism.
+
+### 2.4 Get Current User
+
+**Endpoint:** `GET /api/auth/user`
+
+**Purpose:** Retrieve information about the authenticated user.
+
+**Authentication:** Required.
+
+**Example request:**
+
+```http
+GET /api/auth/user
+```
+
+Credentials must be sent using the authentication mechanism selected.
+
+**Example successful response — `200 OK`:**
+
+```json
+{
+  "id": "user_123",
+  "name": "Alex",
+  "email": "alex@example.com"
+}
+```
+
+**Possible errors:**
+
+- `401 Unauthorized` — authentication is missing or invalid.
+- `500 Internal Server Error` — unexpected server error.
+
+## 3. Projects
+
+A project represents a saved 3D model and contains its shapes.
+
+### Project endpoints
+
+| Method | Endpoint | Purpose | Authentication |
+|---|---|---|---|
+| POST | `/api/projects` | Create a project | Required |
+| GET | `/api/projects` | List projects, optionally filtered by name | Required |
+| GET | `/api/projects/:projectId` | Retrieve a project and its shapes | Required |
+| PATCH | `/api/projects/:projectId` | Update project details | Required |
+| DELETE | `/api/projects/:projectId` | Delete a project | Required |
+
+These endpoints are proposed and must be verified against the backend.
+
+### 3.1 Create a Project
+
+**Endpoint:** `POST /api/projects`
+
+**Purpose:** Create and save a new project.
+
+**Authentication:** Required.
+
+**Request body:**
+
+```json
+{
+  "name": "First Model"
+}
+```
+
+**Example successful response — `201 Created`:**
+
+```json
+{
+  "id": "project_123",
+  "name": "First Model",
+  "createdAt": "2026-10-12T18:00:00Z",
+  "updatedAt": "2026-10-12T18:00:00Z"
+}
+```
+
+**Possible errors:**
+
+- `400 Bad Request` — project name is missing or invalid.
+- `401 Unauthorized` — authentication is missing or invalid.
+- `500 Internal Server Error` — unexpected server error.
+
+The project must be associated with the authenticated user on the server.
+
+### 3.2 List Projects and Search
+
+**Endpoint:** `GET /api/projects`
+
+**Purpose:** Retrieve the authenticated user's projects, optionally filtered by name.
+
+**Authentication:** Required.
+
+**Query parameters:**
+
+- `search` (optional string) — filters projects by name.
+- If omitted, the endpoint returns the user's projects without a search filter.
+
+**Example request — list all projects:**
+
+```http
+GET /api/projects
+```
+
+**Example request — search projects:**
+
+```http
+GET /api/projects?search=First
+```
+
+**Example successful response — `200 OK`:**
+
+```json
+{
+  "projects": [
+    {
+      "id": "project_123",
+      "name": "First Model",
+      "createdAt": "2026-10-12T18:00:00Z",
+      "updatedAt": "2026-10-12T18:00:00Z"
+    }
+  ]
+}
+```
+
+**Possible errors:**
+
+- `401 Unauthorized` — authentication is missing or invalid.
+- `500 Internal Server Error` — unexpected server error.
+
+The example response is illustrative. The actual response structure and search behavior should be discussed.
+
+### 3.3 Retrieve a Project
+
+**Endpoint:** `GET /api/projects/:projectId`
+
+**Purpose:** Load a saved project and its associated shapes.
+
+**Authentication:** Required.
+
+**Path parameters:**
+
+- `projectId` — ID of the project to retrieve.
+
+**Example request:**
+
+```http
+GET /api/projects/project_123
+```
+
+**Example successful response — `200 OK`:**
+
+```json
+{
+  "id": "project_123",
+  "name": "First Model",
+  "shapes": [
+    {
+      "id": "shape_456",
+      "name": "Custom Sphere",
+      "geometry": {
+        "type": "sphere",
+        "radius": 1,
+        "segments": 16,
+        "rings": 8
+      },
+      "color": "#FF0000",
+      "position": [0, 0, 0],
+      "rotation": [0, 0, 0],
+      "scale": [1, 1, 1]
+    }
+  ]
+}
+```
+
+**Possible errors:**
+
+- `401 Unauthorized` — authentication is missing or invalid.
+- `404 Not Found` — the project does not exist or is not accessible to the user.
+- `500 Internal Server Error` — unexpected server error.
+
+This example assumes the project endpoint returns its shapes in the same response. 
+
+### 3.4 Update a Project
+
+**Endpoint:** `PATCH /api/projects/:projectId`
+
+**Purpose:** Update project information, such as its name.
+
+**Authentication:** Required.
+
+**Path parameters:**
+
+- `projectId` — ID of the project to update.
+
+**Request body:**
+
+```json
+{
+  "name": "Updated Model"
+}
+```
+
+Only the supplied fields are updated.
+
+**Example successful response — `200 OK`:**
+
+```json
+{
+  "id": "project_123",
+  "name": "Updated Model",
+  "updatedAt": "2026-10-12T18:30:00Z"
+}
+```
+
+**Possible errors:**
+
+- `400 Bad Request` — invalid project data.
+- `401 Unauthorized` — authentication is missing or invalid.
+- `404 Not Found` — the project does not exist or is not accessible to the user.
+- `500 Internal Server Error` — unexpected server error.
+
+### 3.5 Delete a Project
+
+**Endpoint:** `DELETE /api/projects/:projectId`
+
+**Purpose:** Delete a project and its associated data.
+
+**Authentication:** Required.
+
+**Path parameters:**
+
+- `projectId` — ID of the project to delete.
+
+**Example request:**
+
+```http
+DELETE /api/projects/project_123
+```
+
+**Example successful response — `204 No Content`:**
+
+No response body.
+
+**Possible errors:**
+
+- `401 Unauthorized` — authentication is missing or invalid.
+- `404 Not Found` — the project does not exist or is not accessible to the user.
+- `500 Internal Server Error` — unexpected server error.
+
+The backend must define whether deleting a project also deletes its shapes and any related files.
+
+## 4. Shapes and Geometry
+
+Each shape belongs to a project. Shapes share common properties but may use different geometry data depending on their type.
+
+Common properties include:
+
+- `name` — shape name.
+- `geometry` — shape type and geometry-specific parameters.
+- `color` — color value, such as a hexadecimal color.
+- `position` — `[x, y, z]` coordinates.
+- `rotation` — rotation values for the three axes.
+- `scale` — scale values for the three axes.
+
+The API should support only the geometry types implemented by the 3D engine.
+
+For example, a procedural sphere can store its radius and segment counts, while a custom mesh can store vertices and faces. These different geometry structures can be stored in the same shape record, provided the backend validates them according to their type.
+
+### Shape endpoints
+
+| Method | Endpoint | Purpose | Authentication |
+|---|---|---|---|
+| POST | `/api/projects/:projectId/shapes` | Create a shape in a project | Required |
+| GET | `/api/projects/:projectId/shapes` | List a project's shapes | Required |
+| GET | `/api/shapes/:shapeId` | Retrieve a specific shape | Required |
+| PATCH | `/api/shapes/:shapeId` | Update a shape | Required |
+| DELETE | `/api/shapes/:shapeId` | Delete a shape | Required |
+
+
+### 4.1 Create a Shape
+
+**Endpoint:** `POST /api/projects/:projectId/shapes`
+
+**Purpose:** Add a shape to an existing project.
+
+**Authentication:** Required.
+
+**Path parameters:**
+
+- `projectId` — ID of the project receiving the shape.
+
+**Request body:**
+
+```json
+{
+  "name": "Custom Sphere",
+  "geometry": {
+    "type": "sphere",
+    "radius": 1,
+    "segments": 16,
+    "rings": 8
+  },
+  "color": "#FF0000",
+  "position": [0, 0, 0],
+  "rotation": [0, 0, 0],
+  "scale": [1, 1, 1]
+}
+```
+
+This example defines a red sphere with a radius of 1 at the origin. The 3D engine generates the sphere geometry from its parameters.
+
+**Example successful response — `201 Created`:**
+
+```json
+{
+  "id": "shape_456",
+  "projectId": "project_123",
+  "name": "Custom Sphere",
+  "geometry": {
+    "type": "sphere",
+    "radius": 1,
+    "segments": 16,
+    "rings": 8
+  },
+  "color": "#FF0000",
+  "position": [0, 0, 0],
+  "rotation": [0, 0, 0],
+  "scale": [1, 1, 1]
+}
+```
+
+**Possible errors:**
+
+- `400 Bad Request` — required fields are missing or geometry is invalid.
+- `401 Unauthorized` — authentication is missing or invalid.
+- `404 Not Found` — the project does not exist or is not accessible to the user.
+- `413 Payload Too Large` — geometry exceeds the allowed size.
+- `500 Internal Server Error` — unexpected server error.
+
+### 4.2 List Shapes
+
+**Endpoint:** `GET /api/projects/:projectId/shapes`
+
+**Purpose:** Retrieve all shapes belonging to a project.
+
+**Authentication:** Required.
+
+**Path parameters:**
+
+- `projectId` — ID of the project.
+
+**Example request:**
+
+```http
+GET /api/projects/project_123/shapes
+```
+
+**Example successful response — `200 OK`:**
+
+```json
+{
+  "shapes": [
+    {
+      "id": "shape_456",
+      "projectId": "project_123",
+      "name": "Custom Sphere",
+      "geometry": {
+        "type": "sphere",
+        "radius": 1,
+        "segments": 16,
+        "rings": 8
+      },
+      "color": "#FF0000",
+      "position": [0, 0, 0],
+      "rotation": [0, 0, 0],
+      "scale": [1, 1, 1]
+    }
+  ]
+}
+```
+
+**Possible errors:**
+
+- `401 Unauthorized` — authentication is missing or invalid.
+- `404 Not Found` — the project does not exist or is not accessible to the user.
+- `500 Internal Server Error` — unexpected server error.
+
+### 4.3 Retrieve a Shape
+
+**Endpoint:** `GET /api/shapes/:shapeId`
+
+**Purpose:** Retrieve one shape by its ID.
+
+**Authentication:** Required.
+
+**Path parameters:**
+
+- `shapeId` — ID of the shape.
+
+**Example request:**
+
+```http
+GET /api/shapes/shape_456
+```
+
+**Example successful response — `200 OK`:**
+
+```json
+{
+  "id": "shape_456",
+  "projectId": "project_123",
+  "name": "Custom Sphere",
+  "geometry": {
+    "type": "sphere",
+    "radius": 1,
+    "segments": 16,
+    "rings": 8
+  },
+  "color": "#FF0000",
+  "position": [0, 0, 0],
+  "rotation": [0, 0, 0],
+  "scale": [1, 1, 1]
+}
+```
+
+**Possible errors:**
+
+- `401 Unauthorized` — authentication is missing or invalid.
+- `404 Not Found` — the shape does not exist or its project is not accessible to the user.
+- `500 Internal Server Error` — unexpected server error.
+
+### 4.4 Update a Shape
+
+**Endpoint:** `PATCH /api/shapes/:shapeId`
+
+**Purpose:** Update a shape's geometry or properties.
+
+**Authentication:** Required.
+
+**Path parameters:**
+
+- `shapeId` — ID of the shape to update.
+
+**Request body:**
+
+```json
+{
+  "color": "#0000FF",
+  "position": [2, 0, 0]
+}
+```
+
+Only the supplied fields are updated. The example changes the shape's color to blue and moves it along the X axis.
+
+**Example successful response — `200 OK`:**
+
+```json
+{
+  "id": "shape_456",
+  "projectId": "project_123",
+  "name": "Custom Sphere",
+  "geometry": {
+    "type": "sphere",
+    "radius": 1,
+    "segments": 16,
+    "rings": 8
+  },
+  "color": "#0000FF",
+  "position": [2, 0, 0],
+  "rotation": [0, 0, 0],
+  "scale": [1, 1, 1]
+}
+```
+
+**Possible errors:**
+
+- `400 Bad Request` — invalid property values or geometry.
+- `401 Unauthorized` — authentication is missing or invalid.
+- `404 Not Found` — the shape does not exist or its project is not accessible to the user.
+- `413 Payload Too Large` — updated geometry exceeds the allowed size.
+- `500 Internal Server Error` — unexpected server error.
+
+### 4.5 Delete a Shape
+
+**Endpoint:** `DELETE /api/shapes/:shapeId`
+
+**Purpose:** Delete a shape from its project.
+
+**Authentication:** Required.
+
+**Path parameters:**
+
+- `shapeId` — ID of the shape to delete.
+
+**Example request:**
+
+```http
+DELETE /api/shapes/shape_456
+```
+
+**Example successful response — `204 No Content`:**
+
+No response body.
+
+**Possible errors:**
+
+- `401 Unauthorized` — authentication is missing or invalid.
+- `404 Not Found` — the shape does not exist or its project is not accessible to the user.
+- `500 Internal Server Error` — unexpected server error.
+
+## 5. Saving and Loading Projects
+
+The proposed API saves a project record separately from its shapes. The frontend may therefore create a project first and then create, update, or delete its shapes through the shape endpoints.
+
+If the frontend instead saves the entire model in one request, a project-level save endpoint and its complete request and response format must be documented.
+
+Loading must return enough information for the frontend to reconstruct the project, including each shape's geometry and properties.
+
+## 6. STL Export
+
+**Endpoint:** `POST /api/projects/:projectId/export`
+
+**Purpose:** Export a saved project as an STL model file.
+
+**Authentication:** Required.
+
+**Path parameters:**
+
+- `projectId` — ID of the project to export.
+
+**Request body:** No body is required in this proposed design.
+
+**Example request:**
+
+```http
+POST /api/projects/project_123/export
+```
+
+**Expected successful response:**
+
+The server returns the generated STL file for download. The final implementation must document:
+
+- The actual HTTP success status.
+- The response content type, typically `model/stl`.
+- The filename and `Content-Disposition` behavior.
+- Whether the file is returned directly or through a download URL.
+
+**Possible errors:**
+
+- `401 Unauthorized` — authentication is missing or invalid.
+- `404 Not Found` — the project does not exist or is not accessible to the user.
+- `400 Bad Request` — the project contains invalid or non-exportable geometry.
+- `500 Internal Server Error` — export fails unexpectedly.
+
+The export workflow, file format, and error behavior must be verified against the implementation.
+
+## 7. Authorization and Validation
+
+### Project access
+
+Under the MVP design, users may access and modify only their own projects.
+
+The backend must:
+
+1. Identify the authenticated user through the chosen authentication mechanism.
+2. Associate newly created projects with that user.
+3. Check project ownership before returning or modifying a project.
+4. Check access to the parent project before creating, retrieving, updating, or deleting a shape.
+5. Restrict search results to projects the user is authorized to access.
+6. Avoid relying on a user ID supplied by the frontend to determine access permissions.
+
+An inaccessible project or shape may return `404 Not Found` to avoid revealing whether another user's private resource exists. 
+
+### Input validation
+
+The backend should validate:
+
+- Required fields and data types.
+- Project names and other text fields.
+- Supported geometry types and their required parameters.
+- Sphere radius and segment counts when spheres are supported.
+- Vertex and face structure when custom meshes are supported.
+- Color values and position, rotation, and scale arrays.
+- Geometry size limits to prevent excessive resource use.
+
+Only geometry types supported by the implemented 3D engine should be accepted.
+
+## 8. Error Responses
+
+The following table describes common API status codes. 
+
+| Status | Meaning |
+|---|---|
+| `200 OK` | Request succeeded and a response body may be returned |
+| `201 Created` | Resource was created successfully |
+| `204 No Content` | Request succeeded without a response body |
+| `400 Bad Request` | Request data is invalid |
+| `401 Unauthorized` | Authentication is missing or invalid |
+| `403 Forbidden` | User is authenticated but lacks permission |
+| `404 Not Found` | Resource does not exist or is not accessible |
+| `409 Conflict` | Request conflicts with existing data, such as a duplicate email |
+| `413 Payload Too Large` | Request exceeds the allowed size |
+| `500 Internal Server Error` | Unexpected server error |
+
+### Example error response
+
+```json
+{
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "The request contains invalid geometry."
+  }
+}
+```
+
+This is a proposed error format. The actual structure, codes, and messages must match the backend implementation.
+
+## 9. Future Features — Outside the MVP
+
+The following features are not part of the MVP API unless they are implemented and explicitly added to the current API reference.
+
+| Feature | Proposed endpoint | Purpose |
+|---|---|---|
+| Two-factor authentication | `POST /api/auth/2fa/setup` | Begin setting up a second authentication factor |
+| Two-factor authentication | `POST /api/auth/2fa/verify` | Verify a second authentication factor |
+| Project sharing | `POST /api/projects/:projectId/shares` | Grant another user access to a project |
+| Project visibility | `PATCH /api/projects/:projectId/visibility` | Set project visibility to public or private |
+
+The 3D canvas is primarily a frontend feature and does not necessarily require its own endpoint. Geometry editing, saving, loading, and STL export are covered by the proposed MVP routes.
+
+## 10. Decisions to Confirm Before Finalizing
+
+1. **Implemented routes:** Verify all endpoint paths, HTTP methods, and authentication requirements against the backend.
+2. **Authentication:** Confirm cookie-based sessions or bearer tokens and document the exact frontend behavior.
+3. **Project saving:** Decide whether the frontend saves projects and shapes separately or submits the entire model through one project-level endpoint.
+4. **Geometry format:** Confirm supported shape types and their geometry fields, including whether custom vertices and faces are supported.
+5. **Response formats:** Confirm the exact fields, IDs, timestamps, and response wrappers returned by each endpoint.
+6. **Search scope:** Confirm whether search covers project names only and whether results are filtered by ownership.
+7. **STL export:** Confirm the file response format, filename, and whether export is synchronous or uses a background job.
+8. **Error behavior:** Verify status codes and response bodies for validation, authentication, authorization, and missing resources.
+
