@@ -116,7 +116,7 @@ These routes are proposed and must be checked against the actual implementation.
 
 **Endpoint:** `POST /api/auth/register`
 
-**Purpose:** Create a new user account.
+**Purpose:** Create a new user account.The user is **not** logged in automatically; the client must call the login endpoint afterwards.
 
 **Authentication:** Not required.
 
