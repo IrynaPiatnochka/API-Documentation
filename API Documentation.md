@@ -122,6 +122,12 @@ These routes are proposed and must be checked against the actual implementation.
 
 **Request body:**
 
+| Field | Type | Required | Rules |
+| :--- | :--- | :---: | :--- |
+| `name` | string | Yes | 1–50 characters after trimming |
+| `email` | string | Yes | Valid email, maximum 254 characters |
+| `password` | string | Yes | 8–128 characters |
+
 ```json
 {
   "name": "Alex",
