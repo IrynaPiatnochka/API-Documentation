@@ -148,6 +148,14 @@ These routes are proposed and must be checked against the actual implementation.
 
 **Possible errors:**
 
+| Status | Code | Reason |
+| :---: | :--- | :--- |
+| 400 | `INVALID_REQUEST` | Body is missing or is not valid JSON |
+| 409 | `EMAIL_ALREADY_REGISTERED` | Email is already in use |
+| 422 | `VALIDATION_ERROR` | A field is missing or breaks a rule above |
+| 429 | `RATE_LIMITED` | Too many registration attempts |
+| 500 | `INTERNAL_ERROR` | Unexpected server error |
+
 - `400 Bad Request` — required fields are missing or invalid.
 - `409 Conflict` — the email address is already registered.
 - `500 Internal Server Error` — unexpected server error.
