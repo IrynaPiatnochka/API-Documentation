@@ -280,6 +280,16 @@ A project represents a saved 3D model and contains its shapes. A project is a sa
 
 These endpoints are proposed and must be verified against the backend.
 
+### Project object
+
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `id` | string | Unique project ID |
+| `name` | string | 1–100 characters after trimming |
+| `createdAt` | string | Creation time (ISO 8601, UTC) |
+| `updatedAt` | string | Last change to the project or any of its shapes |
+| `shapes` | array | Shape objects. Returned only by the retrieve endpoint (5.4). |
+
 ### 3.1 Create a Project
 
 **Endpoint:** `POST /api/projects`
