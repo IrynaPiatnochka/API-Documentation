@@ -33,7 +33,7 @@ The API will support the following MVP features:
 - The final documentation must reflect the actual response fields and status codes returned by the backend.
 - Each endpoint documents its purpose, authentication requirements, request format, successful response, and expected errors.
 
-  ### 1.3 Error format
+### 1.3 Error format
 
 All errors use the same JSON structure:
 
@@ -84,6 +84,18 @@ All errors use the same JSON structure:
 | `NOT_EXPORTABLE` | 422 | The project cannot be exported (see section 8) |
 | `RATE_LIMITED` | 429 | Too many attempts |
 | `INTERNAL_ERROR` | 500 | Unexpected error |
+
+### 2.6 Pagination and sorting
+
+Collection endpoints that can grow large (`GET /projects`) accept these query parameters. Shape lists are not paginated, because a project holds at most 500 shapes.
+
+| Parameter | Type | Default | Rules |
+| :--- | :--- | :--- | :--- |
+| `limit` | integer | 20 | 1–100 |
+| `offset` | integer | 0 | 0 or greater |
+| `sort` | string | `-updatedAt` | `name`, `createdAt` or `updatedAt`; a leading `-` means descending |
+
+Paginated responses include a `pagination` object, for example `{ "total": 42, "limit": 20, "offset": 0 }`. Invalid values return `422 VALIDATION_ERROR`.
 
 ## 2. Authentication
 
