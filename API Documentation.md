@@ -116,7 +116,7 @@ These routes are proposed and must be checked against the actual implementation.
 
 **Endpoint:** `POST /api/auth/register`
 
-**Purpose:** Create a new user account.The user is **not** logged in automatically; the client must call the login endpoint afterwards.
+**Purpose:** Create a new user account. The user is **not** logged in automatically; the client must call the login endpoint afterwards.
 
 **Authentication:** Not required.
 
@@ -266,7 +266,7 @@ Credentials must be sent using the authentication mechanism selected.
 
 ## 3. Projects
 
-A project represents a saved 3D model and contains its shapes. A project is a saved 3D model owned by one user. It contains a collection of shapes (section 4). All project endpoints require authentication, and a user can only reach their own projects.
+A project represents a saved 3D model and contains its shapes. A project is owned by one user. It contains a collection of shapes (section 4). All project endpoints require authentication, and a user can only reach their own projects.
 
 ### Project endpoints
 
