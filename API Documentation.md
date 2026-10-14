@@ -200,6 +200,14 @@ The example assumes authentication is established through a cookie or another se
 
 **Possible errors:**
 
+| Status | Code | Reason |
+| :---: | :--- | :--- |
+| 400 | `INVALID_REQUEST` | Body is missing or is not valid JSON |
+| 401 | `INVALID_CREDENTIALS` | Email or password is incorrect.|
+| 422 | `VALIDATION_ERROR` | `email` or `password` is missing or empty |
+| 429 | `RATE_LIMITED` | Too many failed attempts; use the `Retry-After` header |
+| 500 | `INTERNAL_ERROR` | Unexpected server error |
+
 - `400 Bad Request` — invalid request fields.
 - `401 Unauthorized` — credentials are incorrect.
 - `500 Internal Server Error` — unexpected server error.
@@ -220,14 +228,6 @@ No response body.
 
 **Possible errors:**
 
-| Status | Code | Reason |
-| :---: | :--- | :--- |
-| 400 | `INVALID_REQUEST` | Body is missing or is not valid JSON |
-| 401 | `INVALID_CREDENTIALS` | Email or password is incorrect. The response must not reveal which one. |
-| 422 | `VALIDATION_ERROR` | `email` or `password` is missing or empty |
-| 429 | `RATE_LIMITED` | Too many failed attempts; use the `Retry-After` header |
-| 500 | `INTERNAL_ERROR` | Unexpected server error |
-
 - `401 Unauthorized` — authentication is missing or invalid.
 - `500 Internal Server Error` — unexpected server error.
 
@@ -237,7 +237,7 @@ The response status and session-clearing behavior must match the implemented aut
 
 **Endpoint:** `GET /api/auth/user`
 
-**Purpose:** Retrieve information about the authenticated user.
+**Purpose:** Retrieve information about the authenticated user. The frontend can call this on page load to check whether a session is still valid.
 
 **Authentication:** Required.
 
@@ -266,7 +266,7 @@ Credentials must be sent using the authentication mechanism selected.
 
 ## 3. Projects
 
-A project represents a saved 3D model and contains its shapes.
+A project represents a saved 3D model and contains its shapes. A project is a saved 3D model owned by one user. It contains a collection of shapes (section 6). All project endpoints require authentication, and a user can only reach their own projects.
 
 ### Project endpoints
 
