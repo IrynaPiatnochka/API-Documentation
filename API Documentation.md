@@ -33,6 +33,58 @@ The API will support the following MVP features:
 - The final documentation must reflect the actual response fields and status codes returned by the backend.
 - Each endpoint documents its purpose, authentication requirements, request format, successful response, and expected errors.
 
+  ### 1.3 Error format
+
+All errors use the same JSON structure:
+
+```json
+{
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "The request contains invalid geometry."
+  }
+}
+```
+
+- `code`: stable, machine-readable string. Clients should rely on it, not on `message`.
+- `message`: human-readable description. For validation errors it names the invalid field. It may change and must not be parsed.
+
+### 1.4 Common status codes
+
+| Status | Meaning |
+| :--- | :--- |
+| 200 OK | Request succeeded and a body is returned |
+| 201 Created | Resource created; the `Location` header holds its URL |
+| 204 No Content | Request succeeded without a body |
+| 400 Bad Request | Malformed JSON or missing body |
+| 401 Unauthorized | Authentication is missing, expired or invalid |
+| 403 Forbidden | Request refused, for example a missing CSRF header |
+| 404 Not Found | Resource does not exist or is not visible to the user |
+| 409 Conflict | The request conflicts with the current state |
+| 413 Payload Too Large | Request body exceeds 1 MB |
+| 415 Unsupported Media Type | `Content-Type` is not `application/json` |
+| 422 Unprocessable Entity | Well-formed JSON that fails validation rules |
+| 429 Too Many Requests | Rate limit exceeded; see the `Retry-After` header |
+| 500 Internal Server Error | Unexpected server error |
+
+### 1.5 Error codes
+
+| Code | Status | Description |
+| :--- | :---: | :--- |
+| `INVALID_REQUEST` | 400 | Malformed JSON or missing body |
+| `UNAUTHENTICATED` | 401 | No valid session |
+| `INVALID_CREDENTIALS` | 401 | Email or password is incorrect |
+| `FORBIDDEN` | 403 | Request refused, for example a missing CSRF header |
+| `NOT_FOUND` | 404 | Resource not found or not visible to the user |
+| `EMAIL_ALREADY_REGISTERED` | 409 | Email is already in use |
+| `SHAPE_LIMIT_REACHED` | 409 | The project already holds the maximum number of shapes (500) |
+| `PAYLOAD_TOO_LARGE` | 413 | Request body exceeds 1 MB |
+| `UNSUPPORTED_MEDIA_TYPE` | 415 | `Content-Type` is not `application/json` |
+| `VALIDATION_ERROR` | 422 | One or more fields failed validation |
+| `NOT_EXPORTABLE` | 422 | The project cannot be exported (see section 8) |
+| `RATE_LIMITED` | 429 | Too many attempts |
+| `INTERNAL_ERROR` | 500 | Unexpected error |
+
 ## 2. Authentication
 
 Authentication allows users to register, log in, log out, and retrieve their current account information.
