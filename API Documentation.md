@@ -781,14 +781,14 @@ A project is stored as a project record plus its shapes. The frontend can save i
 | Use | How | Endpoints |
 | :--- | :--- | :--- |
 | Autosave after each edit (move, rotate, resize, recolor) | One small request per change | `POST`, `PATCH` and `DELETE` on shapes (see Shapes and Geometry) |
-| Explicit Save button | One request that stores the whole model | `PUT /api/v1/projects/:projectId/shapes` (5.1) |
-| Load | One request that returns the project and all its shapes | `GET /api/v1/projects/:projectId` (5.2) |
+| Explicit Save button | One request that stores the whole model | `PUT /api/projects/:projectId/shapes` (5.1) |
+| Load | One request that returns the project and all its shapes | `GET /api/projects/:projectId` (5.2) |
 
 Every change to a shape updates the project's `updatedAt`. When two browser tabs edit the same project, the last write wins in the MVP.
 
 ### 5.1 Replace All Shapes of a Project
 
-**Endpoint:** `PUT /api/v1/projects/:projectId/shapes`
+**Endpoint:** `PUT /api/projects/:projectId/shapes`
 
 **Purpose:** Store the complete model in one atomic operation: either every change is applied or none.
 
