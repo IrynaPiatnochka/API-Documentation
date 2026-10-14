@@ -519,7 +519,16 @@ Every shape belongs to one project. All shapes share the same properties, and th
 - `rotation` — rotation values for the three axes.
 - `scale` — scale values for the three axes.
 
-The API should support only the geometry types implemented by the 3D engine.
+### Geometry types
+
+The API accepts only the types below. Each type is generated from parameters by the 3D engine. Custom meshes with raw vertices and faces are not part of the MVP.
+
+| `type` | Parameters | Limits |
+| :--- | :--- | :--- |
+| `box` | `width`, `height`, `depth` | Each greater than 0 and at most 1000 |
+| `sphere` | `radius`, `segments`, `rings` | `radius` greater than 0 and at most 1000; `segments` integer 3–64; `rings` integer 2–64 |
+| `cylinder` | `radius`, `height`, `segments` | `radius` and `height` greater than 0 and at most 1000; `segments` integer 3–64 |
+| `cone` | `radius`, `height`, `segments` | `radius` and `height` greater than 0 and at most 1000; `segments` integer 3–64 |
 
 For example, a procedural sphere can store its radius and segment counts, while a custom mesh can store vertices and faces. These different geometry structures can be stored in the same shape record, provided the backend validates them according to their type.
 
