@@ -81,7 +81,7 @@ All errors use the same JSON structure:
 | `PAYLOAD_TOO_LARGE` | 413 | Request body exceeds 1 MB |
 | `UNSUPPORTED_MEDIA_TYPE` | 415 | `Content-Type` is not `application/json` |
 | `VALIDATION_ERROR` | 422 | One or more fields failed validation |
-| `NOT_EXPORTABLE` | 422 | The project cannot be exported (see section 8) |
+| `NOT_EXPORTABLE` | 422 | The project cannot be exported (see section 6) |
 | `RATE_LIMITED` | 429 | Too many attempts |
 | `INTERNAL_ERROR` | 500 | Unexpected error |
 
@@ -949,37 +949,8 @@ The backend should validate:
 
 Only geometry types supported by the implemented 3D engine should be accepted.
 
-## 8. Error Responses
 
-The following table describes common API status codes. 
-
-| Status | Meaning |
-|---|---|
-| `200 OK` | Request succeeded and a response body may be returned |
-| `201 Created` | Resource was created successfully |
-| `204 No Content` | Request succeeded without a response body |
-| `400 Bad Request` | Request data is invalid |
-| `401 Unauthorized` | Authentication is missing or invalid |
-| `403 Forbidden` | User is authenticated but lacks permission |
-| `404 Not Found` | Resource does not exist or is not accessible |
-| `409 Conflict` | Request conflicts with existing data, such as a duplicate email |
-| `413 Payload Too Large` | Request exceeds the allowed size |
-| `500 Internal Server Error` | Unexpected server error |
-
-### Example error response
-
-```json
-{
-  "error": {
-    "code": "VALIDATION_ERROR",
-    "message": "The request contains invalid geometry."
-  }
-}
-```
-
-This is a proposed error format. The actual structure, codes, and messages must match the backend implementation.
-
-## 9. Future Features — Outside the MVP
+## 8. Future Features — Outside the MVP
 
 The following features are not part of the MVP API unless they are implemented and explicitly added to the current API reference.
 
@@ -992,7 +963,7 @@ The following features are not part of the MVP API unless they are implemented a
 
 The 3D canvas is primarily a frontend feature and does not necessarily require its own endpoint. Geometry editing, saving, loading, and STL export are covered by the proposed MVP routes.
 
-## 10. Decisions to Confirm Before Finalizing
+## 9. Decisions to Confirm Before Finalizing
 
 1. **Implemented routes:** Verify all endpoint paths, HTTP methods, and authentication requirements against the backend.
 2. **Authentication:** Confirm cookie-based sessions or bearer tokens and document the exact frontend behavior.
