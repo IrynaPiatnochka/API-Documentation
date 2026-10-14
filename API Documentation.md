@@ -495,9 +495,22 @@ The backend must define whether deleting a project also deletes its shapes and a
 
 ## 4. Shapes and Geometry
 
-Each shape belongs to a project. Shapes share common properties but may use different geometry data depending on their type.
+Every shape belongs to one project. All shapes share the same properties, and the geometry object changes with the shape type. All shape endpoints require authentication and check that the parent project belongs to the user.
 
-Common properties include:
+### Shape object
+
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `id` | string | Unique shape ID (read-only) |
+| `projectId` | string | Parent project ID (read-only) |
+| `name` | string | 1–100 characters. Defaults to the type name, for example `Sphere`. |
+| `geometry` | object | Shape type and its parameters (6.2) |
+| `color` | string | Hex color `#RRGGBB`. Stored in uppercase. Default `#CCCCCC`. |
+| `position` | number[3] | `[x, y, z]` in scene units. Default `[0, 0, 0]`. |
+| `rotation` | number[3] | `[x, y, z]` in degrees, applied in X, Y, Z order. Default `[0, 0, 0]`. |
+| `scale` | number[3] | `[x, y, z]` factors, each greater than 0 and at most 1000. Default `[1, 1, 1]`. |
+
+### Common properties include:
 
 - `name` — shape name.
 - `geometry` — shape type and geometry-specific parameters.
