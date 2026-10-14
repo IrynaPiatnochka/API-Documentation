@@ -11,7 +11,8 @@ BlockCAD is a 3D modeling application that allows users to create 3D shapes, mod
 
 This document defines the proposed API contract for the BlockCAD Minimum Viable Product (MVP). It describes the planned endpoints, authentication requirements, request and response formats, validation rules, and expected HTTP status codes.
 
-**1.1 MVP Scope**
+### 1.1 MVP Scope
+
 The API will support the following MVP features:
 User login and authentication.
 Adding basic 3D shapes to a project.
