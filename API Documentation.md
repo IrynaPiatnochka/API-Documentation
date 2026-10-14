@@ -22,16 +22,31 @@ The API will support the following MVP features:
 - Exporting projects to STL format.
 - Searching saved projects.
 
-  | MVP feature | Main endpoints | Section |
-|---|---|---|
-| User registration, login and logout | `/auth/*` | 3, 4 |
-| Add basic 3D shapes | `POST /projects/:projectId/shapes` | 6 |
-| Move, rotate and resize shapes | `PATCH /shapes/:shapeId` | 6 |
-| Change shape colors | `PATCH /shapes/:shapeId` | 6 |
-| Save and load projects | `/projects`, `PUT /projects/:projectId/shapes` | 5, 7 |
-| Search saved projects | `GET /projects?search=` | 5.3 |
-| Export a project to STL | `GET /projects/:projectId/export` | 8 |
-
+  MVP scope
+MVP feature
+Main endpoints
+Section
+User registration, login and logout
+/auth/*
+3, 4
+Add basic 3D shapes
+POST /projects/:projectId/shapes
+6
+Move, rotate and resize shapes
+PATCH /shapes/:shapeId
+6
+Change shape colors
+PATCH /shapes/:shapeId
+6
+Save and load projects
+/projects, PUT /projects/:projectId/shapes
+5, 7
+Search saved projects
+GET /projects?search=
+5.3
+Export a project to STL
+GET /projects/:projectId/export
+8
 
 ### 1.2 General conventions
 
