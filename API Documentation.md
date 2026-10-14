@@ -288,7 +288,7 @@ These endpoints are proposed and must be verified against the backend.
 | `name` | string | 1–100 characters after trimming |
 | `createdAt` | string | Creation time (ISO 8601, UTC) |
 | `updatedAt` | string | Last change to the project or any of its shapes |
-| `shapes` | array | Shape objects. Returned only by the retrieve endpoint (5.4). |
+| `shapes` | array | Shape objects. Returned only by the retrieve endpoint. |
 
 ### 3.1 Create a Project
 
@@ -321,6 +321,7 @@ These endpoints are proposed and must be verified against the backend.
 
 - `400 Bad Request` — project name is missing or invalid.
 - `401 Unauthorized` — authentication is missing or invalid.
+- `422 VALIDATION_ERROR - name is missing, empty or longer than 100 characters
 - `500 Internal Server Error` — unexpected server error.
 
 The project must be associated with the authenticated user on the server.
