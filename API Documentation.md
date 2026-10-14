@@ -776,6 +776,104 @@ No response body.
 
 ## 5. Saving and Loading Projects
 
+A project is stored as a project record plus its shapes. The frontend can save in two ways.
+
+| Use | How | Endpoints |
+| :--- | :--- | :--- |
+| Autosave after each edit (move, rotate, resize, recolor) | One small request per change | `POST`, `PATCH` and `DELETE` on shapes (see Shapes and Geometry) |
+| Explicit Save button | One request that stores the whole model | `PUT /api/v1/projects/:projectId/shapes` (5.1) |
+| Load | One request that returns the project and all its shapes | `GET /api/v1/projects/:projectId` (5.2) |
+
+Every change to a shape updates the project's `updatedAt`. When two browser tabs edit the same project, the last write wins in the MVP.
+
+### 5.1 Replace All Shapes of a Project
+
+**Endpoint:** `PUT /api/v1/projects/:projectId/shapes`
+
+**Purpose:** Store the complete model in one atomic operation: either every change is applied or none.
+
+**Authentication:** Required.
+
+**Path parameters:**
+
+- `projectId` — ID of the project to save.
+
+**Request body:**
+
+```json
+{
+  "shapes": [
+    {
+      "id": "shape_456",
+      "geometry": { "type": "sphere", "radius": 1, "segments": 16, "rings": 8 },
+      "color": "#0000FF",
+      "position": [2, 0, 0]
+    },
+    {
+      "geometry": { "type": "box", "width": 2, "height": 1, "depth": 1 },
+      "color": "#00AA00"
+    }
+  ]
+}
+```
+
+**How the shapes are saved:**
+
+- A shape with the `id` of an existing shape in this project is updated.
+- A shape without an `id` is created.
+- An existing shape that is missing from the request is deleted.
+- Each shape in the request is treated as a complete shape. Properties that are left out take their default values, not their previous values.
+- Shapes are returned in the order they were sent.
+- A project can hold at most 500 shapes.
+
+**Example successful response — 200 OK:**
+
+```json
+{
+  "updatedAt": "2026-10-12T18:45:00Z",
+  "shapes": [
+    {
+      "id": "shape_456",
+      "projectId": "project_123",
+      "name": "Sphere",
+      "geometry": { "type": "sphere", "radius": 1, "segments": 16, "rings": 8 },
+      "color": "#0000FF",
+      "position": [2, 0, 0],
+      "rotation": [0, 0, 0],
+      "scale": [1, 1, 1]
+    },
+    {
+      "id": "shape_789",
+      "projectId": "project_123",
+      "name": "Box",
+      "geometry": { "type": "box", "width": 2, "height": 1, "depth": 1 },
+      "color": "#00AA00",
+      "position": [0, 0, 0],
+      "rotation": [0, 0, 0],
+      "scale": [1, 1, 1]
+    }
+  ]
+}
+```
+
+**Possible errors:**
+
+| Status | Code | Reason |
+| :---: | :--- | :--- |
+| 400 | `INVALID_REQUEST` | Body is missing or is not valid JSON |
+| 401 | `UNAUTHENTICATED` | Authentication is missing or invalid |
+| 404 | `NOT_FOUND` | The project does not exist or is not accessible to the user, or a supplied shape `id` is not part of this project |
+| 409 | `SHAPE_LIMIT_REACHED` | The request contains more than 500 shapes |
+| 413 | `PAYLOAD_TOO_LARGE` | Request body exceeds 1 MB |
+| 422 | `VALIDATION_ERROR` | A shape is invalid. The message names the invalid field and its array position, for example `shapes[1].geometry.width`. |
+| 500 | `INTERNAL_ERROR` | Unexpected server error |
+
+### 5.2 Loading a Project
+
+Loading needs no separate endpoint. `GET /api/v1/projects/:projectId` returns the project together with all its shapes, including each shape's geometry and properties, so the frontend can rebuild the whole model from one response. See the Projects section for the request and response format.
+
+Export uses the last saved state of a project, so the frontend must save the project before it requests an STL export.
+
 The proposed API saves a project record separately from its shapes. The frontend may therefore create a project first and then create, update, or delete its shapes through the shape endpoints.
 
 If the frontend instead saves the entire model in one request, a project-level save endpoint and its complete request and response format must be documented.
