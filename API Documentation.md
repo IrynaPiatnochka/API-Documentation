@@ -16,13 +16,13 @@ This document defines the proposed API contract for the BlockCAD Minimum Viable 
 The API will support the following MVP features:
 | MVP feature | Main endpoints | Section |
 | :--- | :--- | :---: |
-| User registration, login and logout | `/auth/*` | 3, 4 |
-| Adding basic 3D shapes to a project | `POST /projects/:projectId/shapes` | 6 |
-| Moving, rotating, and resizing shapes | `PATCH /shapes/:shapeId` | 6 |
-| Changing shape colors | `PATCH /shapes/:shapeId` | 6 |
-| Saving and loading projects | `/projects`, `PUT /projects/:projectId/shapes` | 5, 7 |
-| Searching saved projects | `GET /projects?search=` | 5.3 |
-| Exporting projects to STL | `GET /projects/:projectId/export` | 8 |
+| User registration, login and logout | `/auth/*` | 2 |
+| Adding basic 3D shapes to a project | `POST /projects/:projectId/shapes` |4 |
+| Moving, rotating, and resizing shapes | `PATCH /shapes/:shapeId` | 4 |
+| Changing shape colors | `PATCH /shapes/:shapeId` | 4 |
+| Saving and loading projects | `/projects`, `PUT /projects/:projectId/shapes` | 3 |
+| Searching saved projects | `GET /projects?search=` | 3.2 |
+| Exporting projects to STL | `GET /projects/:projectId/export` | 6 |
 
 ### 1.2 General conventions
 
