@@ -168,9 +168,14 @@ The actual registration fields, validation rules, and response must be confirmed
 
 **Purpose:** Authenticate a user and establish a session.
 
-**Authentication:** Not required before login.
+**Authentication:** Not required before login. If the client already has a valid session, the old session is replaced by a new one.
 
 **Request body:**
+
+| Field | Type | Required |
+| :--- | :--- | :---: |
+| `email` | string | Yes |
+| `password` | string | Yes |
 
 ```json
 {
@@ -214,6 +219,14 @@ The example assumes authentication is established through a cookie or another se
 No response body.
 
 **Possible errors:**
+
+| Status | Code | Reason |
+| :---: | :--- | :--- |
+| 400 | `INVALID_REQUEST` | Body is missing or is not valid JSON |
+| 401 | `INVALID_CREDENTIALS` | Email or password is incorrect. The response must not reveal which one. |
+| 422 | `VALIDATION_ERROR` | `email` or `password` is missing or empty |
+| 429 | `RATE_LIMITED` | Too many failed attempts; use the `Retry-After` header |
+| 500 | `INTERNAL_ERROR` | Unexpected server error |
 
 - `401 Unauthorized` — authentication is missing or invalid.
 - `500 Internal Server Error` — unexpected server error.
