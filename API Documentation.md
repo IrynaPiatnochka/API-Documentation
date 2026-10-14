@@ -884,7 +884,7 @@ Loading must return enough information for the frontend to reconstruct the proje
 
 **Endpoint:** `POST /api/projects/:projectId/export`
 
-**Purpose:** Export a saved project as an STL model file.
+**Purpose:**  Generates an STL file from the saved state of a project. Changes the user has not saved are not included, so the frontend must save before it exports. Export does not change any data, so it uses GET and a plain download link works with the session cookie.
 
 **Authentication:** Required.
 
