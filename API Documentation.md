@@ -20,7 +20,7 @@ The API will support the following MVP features:
 | Adding basic 3D shapes to a project | `POST /projects/:projectId/shapes` |4 |
 | Moving, rotating, and resizing shapes | `PATCH /shapes/:shapeId` | 4 |
 | Changing shape colors | `PATCH /shapes/:shapeId` | 4 |
-| Saving and loading projects | `/projects`, `PUT /projects/:projectId/shapes` | 3 |
+| Saving and loading projects | `/projects`, `PUT /projects/:projectId/shapes` | 3,5 |
 | Searching saved projects | `GET /projects?search=` | 3.2 |
 | Exporting projects to STL | `GET /projects/:projectId/export` | 6 |
 
@@ -85,7 +85,7 @@ All errors use the same JSON structure:
 | `RATE_LIMITED` | 429 | Too many attempts |
 | `INTERNAL_ERROR` | 500 | Unexpected error |
 
-### 2.6 Pagination and sorting
+### 1.6 Pagination and sorting
 
 Collection endpoints that can grow large (`GET /projects`) accept these query parameters. Shape lists are not paginated, because a project holds at most 500 shapes.
 
@@ -266,7 +266,7 @@ Credentials must be sent using the authentication mechanism selected.
 
 ## 3. Projects
 
-A project represents a saved 3D model and contains its shapes. A project is a saved 3D model owned by one user. It contains a collection of shapes (section 6). All project endpoints require authentication, and a user can only reach their own projects.
+A project represents a saved 3D model and contains its shapes. A project is a saved 3D model owned by one user. It contains a collection of shapes (section 4). All project endpoints require authentication, and a user can only reach their own projects.
 
 ### Project endpoints
 
@@ -504,7 +504,7 @@ Every shape belongs to one project. All shapes share the same properties, and th
 | `id` | string | Unique shape ID (read-only) |
 | `projectId` | string | Parent project ID (read-only) |
 | `name` | string | 1–100 characters. Defaults to the type name, for example `Sphere`. |
-| `geometry` | object | Shape type and its parameters (6.2) |
+| `geometry` | object | Shape type and its parameters (see Geometry types below) |
 | `color` | string | Hex color `#RRGGBB`. Stored in uppercase. Default `#CCCCCC`. |
 | `position` | number[3] | `[x, y, z]` in scene units. Default `[0, 0, 0]`. |
 | `rotation` | number[3] | `[x, y, z]` in degrees, applied in X, Y, Z order. Default `[0, 0, 0]`. |
