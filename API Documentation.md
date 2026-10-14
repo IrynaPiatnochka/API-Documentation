@@ -9,15 +9,27 @@
 
 BlockCAD is a 3D modeling application that allows users to create 3D shapes, modify their geometry and appearance, save and load projects, search projects, and export models to STL format.
 
-This document defines the proposed API structure for the Minimum Viable Product (MVP). Endpoint behavior, request and response formats, and status codes must be verified against the implemented backend.
+This document defines the proposed API contract for the BlockCAD Minimum Viable Product (MVP). It describes the planned endpoints, authentication requirements, request and response formats, validation rules, and expected HTTP status codes.
 
-### General conventions
+**1.1 MVP Scope**
+The API will support the following MVP features:
+User login and authentication.
+Adding basic 3D shapes to a project.
+Moving, rotating, and resizing shapes.
+Changing shape colors.
+Saving and loading projects.
+Exporting projects to STL format.
+Searching saved projects.
+
+
+### 1.2 General conventions
 
 - Endpoints use the `/api` base path.
 - JSON is used for request and response bodies unless otherwise specified.
 - Protected endpoints require authentication.
 - The examples use illustrative IDs and timestamps.
 - The final documentation must reflect the actual response fields and status codes returned by the backend.
+- Each endpoint documents its purpose, authentication requirements, request format, successful response, and expected errors.
 
 ## 2. Authentication
 
